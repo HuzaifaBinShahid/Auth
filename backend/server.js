@@ -9,9 +9,9 @@ const app = express();
 app.use(bodyParser.json());
 
 
-app.use(cors({ 
-  origin: 'http://localhost:5173', 
-  credentials: true 
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
 }));
 
 // PreFlight Cors Check
@@ -35,17 +35,19 @@ mongoose.connect('mongodb://localhost:27017/auth_demo')
   .catch((err) => { console.error("MongoDb Connection error", err) });
 
 const userSchema = new mongoose.Schema({
+  name: { type: String, required: true },
   username: { type: String, required: true, unique: true },
-  password: { type: String, required: true }
+  password: { type: String, required: true },
+  email: { type: String, required: true, unique: true }
 });
 
 const User = mongoose.model('User', userSchema);
 
-app.post('/register', async (req, res) => {
-  const { username, password } = req.body;
+app.post('/signup', async (req, res) => {
+  const { name, username, email, password } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, password: hashedPassword });
+    const newUser = new User({ name, username, email, password: hashedPassword });
     await newUser.save();
     res.status(201).json({ message: 'User Registered Successfully' });
   } catch (error) {
