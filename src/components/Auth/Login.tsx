@@ -15,10 +15,11 @@ const Login = () => {
       const response = await axios.post("http://localhost:3000/login", {
         email,
         password,
-      });
+      }, { withCredentials: true });
 
       if (response.status === 201) {
         toast.success("Login Successfull");
+        sessionStorage.setItem('email', email);
         setTimeout(() => {
           navigate("/home");
         }, 2000);

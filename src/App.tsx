@@ -4,12 +4,14 @@ import SignupPage from "./pages/Signup/index";
 import LoginPage from "./pages/Login/index";
 import "./index.css";
 import "./App.css";
+import Home from "./components/Home/Home";
 
 const App = () => (
   <Router>
     <ToastContainer />
     <div>
       <Routes>
+        <Route path="/home" element={<Home />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
       </Routes>

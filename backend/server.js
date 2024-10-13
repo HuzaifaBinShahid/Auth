@@ -26,9 +26,16 @@ app.use(cors({
 app.use(session({
   secret: 'useAuth',
   resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false }
+  saveUninitialized: false,
+   cookie: {
+    secure: false, // Set to true if using HTTPS
+    httpOnly: true,
+    sameSite: 'lax',
+    // maxAge: 6000 (cookie expiry time 6 seconds )
+  }
 }));
+
+
 
 mongoose.connect('mongodb://localhost:27017/auth_demo')
   .then(() => { console.log("MongoDb Connected") })
@@ -71,9 +78,20 @@ app.post('/login', async (req, res) => {
   }
 });
 
+app.post('/logout', async (req, res) => {
+
+  req.session.destroy((err) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Error logging out' });
+    }
+    res.status(200).json({ message: 'Logout successful' });
+  })
+});
+
 app.get('/check-session', (req, res) => {
-  if (req.session.userId) {
-    res.status(201).json({ isLoggedIn: true, userId: req.session.userId });
+  if (req.session && req.session.userId) {
+    res.status(200).json({ isLoggedIn: true, userId: req.session.userId });
   } else {
     res.status(401).json({ isLoggedIn: false });
   }
