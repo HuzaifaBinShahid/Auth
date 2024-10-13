@@ -57,14 +57,14 @@ app.post('/signup', async (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
   try {
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ email });
     if (user && await bcrypt.compare(password, user.password)) {
       req.session.userId = user._id;
       return res.status(201).json({ message: "Login Successful" });
     }
-    res.status(401).json({ message: 'Invalid username or password' });
+    res.status(401).json({ message: 'Invalid Credentials' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error logging in' });

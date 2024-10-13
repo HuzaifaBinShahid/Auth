@@ -1,9 +1,10 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../../index.css";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import logo from '../../assets/logo.png'
 
 const Signup = () => {
   const [username, setUsername] = useState("");
@@ -35,7 +36,10 @@ const Signup = () => {
 
   return (
     <div className="p-4 w-[70%] mx-auto">
-      <h2 className="text-4xl mb-6">Signup</h2>
+      <div className="flex justify-between mb-6">
+        <h2 className="text-4xl text-[#7E60BF]">Signup</h2>
+        <img src={logo} alt="logo" width={70} className="rounded-full"/>
+      </div>
       <form onSubmit={handleSignup} className="flex flex-col gap-3">
         <input
           type="text"
@@ -76,6 +80,14 @@ const Signup = () => {
           Signup
         </button>
       </form>
+
+      <p className="text-center mt-6">
+        Already has an account?{" "}
+        <Link to="/login">
+          {" "}
+          <span className="text-[#605678] underline">Login</span>{" "}
+        </Link>
+      </p>
     </div>
   );
 };
