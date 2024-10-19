@@ -4,6 +4,8 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken'
+const secretKey = '@Eps1lon@'
 
 const app = express();
 app.use(bodyParser.json());
@@ -27,7 +29,7 @@ app.use(session({
   secret: 'useAuth',
   resave: false,
   saveUninitialized: false,
-   cookie: {
+  cookie: {
     secure: false, // Set to true if using HTTPS
     httpOnly: true,
     sameSite: 'lax',
@@ -78,24 +80,66 @@ app.post('/login', async (req, res) => {
   }
 });
 
-app.post('/logout', async (req, res) => {
+//-------------------Login using session id------------------------
 
-  req.session.destroy((err) => {
-    if (err) {
-      console.error(err);
-      res.status(500).json({ message: 'Error logging out' });
+// app.post('/logout', async (req, res) => {
+
+//   req.session.destroy((err) => {
+//     if (err) {
+//       console.error(err);
+//       res.status(500).json({ message: 'Error logging out' });
+//     }
+//     res.status(200).json({ message: 'Logout successful' });
+//   })
+// });
+
+// ------------------- Checking session based on session id in cookie -----------------
+// app.get('/check-session', (req, res) => {
+//   if (req.session && req.session.userId) {
+//     res.status(200).json({ isLoggedIn: true, userId: req.session.userId });
+//   } else {
+//     res.status(401).json({ isLoggedIn: false });
+//   }
+// });
+
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email })
+    const comparedPassword = await bcrypt.compare(password, user.password);
+    if (user && comparedPassword) {
+      const token = jwt.sign({ userId: user._id, email: user.email }, secretKey, { expiresIn: '1h' })
+      return res.status(201).json({ message: "Login successfull", token })
     }
-    res.status(200).json({ message: 'Logout successful' });
+    res.status(401).json({ message: "Invalid credentials" })
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error Logging in" })
+  }
+})
+
+const authenticateToken = (req,res,next) =>{
+  const token = req.headers['authorization'];
+  if(!token){
+   return res.status(401).json({message: 'Unauthorized'})
+  }
+
+  jwt.verify(token , secretKey, (err, user) =>{
+    if(err){
+      return res.sendStatus(403).json({message: 'Invalid token'});
+    }
+    req.user = user;
+    next(); // move to next middleware or route handler
   })
+}
+
+app.get('/check-token', authenticateToken, (req, res) => {
+  // Since the token is valid and `authenticateToken` attaches `req.user`, return the user info
+  res.status(200).json({ isLoggedIn: true, userId: req.user.userId });
 });
 
-app.get('/check-session', (req, res) => {
-  if (req.session && req.session.userId) {
-    res.status(200).json({ isLoggedIn: true, userId: req.session.userId });
-  } else {
-    res.status(401).json({ isLoggedIn: false });
-  }
-});
+
+
 
 app.post('/logout', (req, res) => {
   req.session.destroy((err) => {

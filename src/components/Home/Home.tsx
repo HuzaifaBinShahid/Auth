@@ -6,28 +6,68 @@ import { useEffect } from "react";
 const Home = () => {
   const navigate = useNavigate();
 
-  useEffect(() =>{
-   const checkSession = async() =>{
-    try{
-      const response = await axios.get('http://localhost:3000/check-session', {withCredentials: true});
-      if(response.status === 200 && response.data.isLoggedIn){
 
+
+  // Based on session id
+  // useEffect(() => {
+  //   const checkSession = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         "http://localhost:3000/check-session",
+  //         { withCredentials: true }
+  //       );
+  //       if (response.status === 200 && response.data.isLoggedIn) {
+  //       } else {
+  //         navigate("/login");
+  //         // setTimeout(() => { toast.error('Session not found Login again')},2000); not working currently
+  //       }
+  //     } catch (error) {
+  //       console.error(error);
+  //       navigate("/login");
+  //     }
+  //   };
+  //   checkSession();
+  // }, [navigate]);
+
+
+  useEffect(() =>{
+
+    const checkToken = async() =>{
+      try{
+        const token = localStorage.getItem('token');
+
+        if(!token){
+          return navigate('login');
+        }
+
+        const response = await axios.post('http://localhost:3000/check-token', {
+          headers: {
+            Authorization: token,
+          }
+        });
+
+        if (response.status === 201 && response.data.isLoggedIn) {
+          // User is authenticated, you can proceed as usual
+        } else {
+          navigate("/login"); 
+        }
+      }catch(error){
+        console.error(error);
+        navigate("/login");
       }
-      else{
-        toast.error('Session expired login again')
-        navigate('/login');
-      }
-    }catch(error){
-      console.error(error);
-      navigate("/login");
     }
-   }
-   checkSession()
+
+    checkToken();
+
   },[navigate])
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post("http://localhost:3000/logout", {}, { withCredentials: true });
+      const response = await axios.post(
+        "http://localhost:3000/logout",
+        {},
+        { withCredentials: true }
+      );
       if (response.status === 200) {
         sessionStorage.clear();
         toast.success("Logout successfull");
@@ -44,7 +84,9 @@ const Home = () => {
   return (
     <div>
       <p className="text-white">welcome {user} </p>
-      <button className="bg-white text-black" onClick={handleLogout}>Logout</button>
+      <button className="bg-white text-black" onClick={handleLogout}>
+        Logout
+      </button>
     </div>
   );
 };
