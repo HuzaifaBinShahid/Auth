@@ -1,12 +1,10 @@
 import axios from "axios";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Home = () => {
   const navigate = useNavigate();
-
-
 
   // Based on session id
   // useEffect(() => {
@@ -29,37 +27,34 @@ const Home = () => {
   //   checkSession();
   // }, [navigate]);
 
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        const token = localStorage.getItem("token");
 
-  useEffect(() =>{
-
-    const checkToken = async() =>{
-      try{
-        const token = localStorage.getItem('token');
-
-        if(!token){
-          return navigate('login');
+        if (!token) {
+          return navigate("login");
         }
 
-        const response = await axios.post('http://localhost:3000/check-token', {
-          headers: {
-            Authorization: token,
-          }
-        });
+        // const response = await axios.post('http://localhost:3000/check-token', {
+        //   headers: {
+        //     Authorization: token,
+        //   }
+        // });
 
-        if (response.status === 201 && response.data.isLoggedIn) {
-          // User is authenticated, you can proceed as usual
-        } else {
-          navigate("/login"); 
-        }
-      }catch(error){
+        // if (response.status === 201 && response.data.isLoggedIn) {
+        //   // User is authenticated, you can proceed as usual
+        // } else {
+        //   navigate("/login");
+        // }
+      } catch (error) {
         console.error(error);
         navigate("/login");
       }
-    }
+    };
 
     checkToken();
-
-  },[navigate])
+  }, [navigate]);
 
   const handleLogout = async () => {
     try {

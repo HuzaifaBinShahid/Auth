@@ -1,10 +1,10 @@
-import express from 'express';
-import session from 'express-session';
+import bcrypt from 'bcrypt';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import express from 'express';
+import session from 'express-session';
+import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken'
 const secretKey = '@Eps1lon@'
 
 const app = express();
@@ -65,20 +65,20 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-app.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    const user = await User.findOne({ email });
-    if (user && await bcrypt.compare(password, user.password)) {
-      req.session.userId = user._id;
-      return res.status(201).json({ message: "Login Successful" });
-    }
-    res.status(401).json({ message: 'Invalid Credentials' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error logging in' });
-  }
-});
+// app.post('/login', async (req, res) => {
+//   const { email, password } = req.body;
+//   try {
+//     const user = await User.findOne({ email });
+//     if (user && await bcrypt.compare(password, user.password)) {
+//       req.session.userId = user._id;
+//       return res.status(201).json({ message: "Login Successful" });
+//     }
+//     res.status(401).json({ message: 'Invalid Credentials' });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Error logging in' });
+//   }
+// });
 
 //-------------------Login using session id------------------------
 
@@ -118,15 +118,15 @@ app.post('/login', async (req, res) => {
   }
 })
 
-const authenticateToken = (req,res,next) =>{
+const authenticateToken = (req, res, next) => {
   const token = req.headers['authorization'];
-  if(!token){
-   return res.status(401).json({message: 'Unauthorized'})
+  if (!token) {
+    return res.status(401).json({ message: 'Unauthorized' })
   }
 
-  jwt.verify(token , secretKey, (err, user) =>{
-    if(err){
-      return res.sendStatus(403).json({message: 'Invalid token'});
+  jwt.verify(token, secretKey, (err, user) => {
+    if (err) {
+      return res.sendStatus(403).json({ message: 'Invalid token' });
     }
     req.user = user;
     next(); // move to next middleware or route handler

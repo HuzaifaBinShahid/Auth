@@ -1,16 +1,19 @@
-import { useState } from "react";
 import axios from "axios";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../../assets/logo.png";
 import { toast } from "react-toastify";
+import logo from "../../assets/logo.png";
+import Spinner from "../common/Spinner";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e: any) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const response = await axios.post("http://localhost:3000/login", {
         email,
@@ -18,15 +21,20 @@ const Login = () => {
       });
 
       if (response.status === 201) {
-        localStorage.setItem('token', response.data.token);
-        toast.success("Login Successfull");
+        localStorage.setItem("token", response.data.token);
         setTimeout(() => {
           navigate("/home");
+          toast.success("Login Successfull");
         }, 2000);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Could not Logged in");
+      if (axios.isAxiosError(error)) {
+        toast.error(error?.response?.data?.message || "Could not log in");
+      } else {
+        toast.error("An unexpected error occurred");
+      }
+      setIsLoading(false);
     }
   };
 
@@ -57,7 +65,7 @@ const Login = () => {
           type="submit"
           className="bg-[#433878] hover:bg-[#7E60BF] duration-300 ease-in-out text-white hover:text-[#0B192C] p-2 w-[40%] m-auto rounded-full"
         >
-          Login
+          {isLoading ? <Spinner /> : "Login"}
         </button>
       </form>
 
