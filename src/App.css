@@ -4,8 +4,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 body{
-    background-color: #0B192C;
-    font-family: "Roboto", sans-serif;
+    background-color: black;
+    font-family: "Inter", sans-serif;
+    background-image: url("https://pixor-react.wpolive.com/static/media/bg-shap.de1636bd491312296dd2cd2b7d5d9ead.svg") !important;
     
 }
 

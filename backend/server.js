@@ -82,16 +82,16 @@ app.post('/signup', async (req, res) => {
 
 //-------------------Login using session id------------------------
 
-// app.post('/logout', async (req, res) => {
+app.post('/logout', async (req, res) => {
 
-//   req.session.destroy((err) => {
-//     if (err) {
-//       console.error(err);
-//       res.status(500).json({ message: 'Error logging out' });
-//     }
-//     res.status(200).json({ message: 'Logout successful' });
-//   })
-// });
+  req.session.destroy((err) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Error logging out' });
+    }
+    res.status(200).json({ message: 'Logout successful' });
+  })
+});
 
 // ------------------- Checking session based on session id in cookie -----------------
 // app.get('/check-session', (req, res) => {

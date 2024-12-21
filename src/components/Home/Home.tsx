@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import Navbar from "../Navbar";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -65,6 +66,7 @@ const Home = () => {
       );
       if (response.status === 200) {
         sessionStorage.clear();
+        localStorage.clear();
         toast.success("Logout successfull");
         navigate("/login");
       }
@@ -74,14 +76,16 @@ const Home = () => {
     }
   };
 
-  const user = sessionStorage.getItem("email");
+  // const user = sessionStorage.getItem("email");
 
   return (
     <div>
-      <p className="text-white">welcome {user} </p>
+      {/* <p className="text-white">welcome {user} </p>
       <button className="bg-white text-black" onClick={handleLogout}>
         Logout
-      </button>
+      </button> */}
+
+      <Navbar />
     </div>
   );
 };
