@@ -6,7 +6,7 @@ const Navbar = () => {
 
   return (
     <section id="navbar">
-      <div className="flex justify-between items-center m-12">
+      <div className="flex justify-between items-center my-8 mx-20">
         <div>
           <img
             src="https://pixor-react.wpolive.com/static/media/logo.238c5f83428fc0b5ecb53c0837f5e287.svg"
