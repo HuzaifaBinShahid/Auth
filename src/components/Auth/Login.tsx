@@ -23,7 +23,7 @@ const Login = () => {
       if (response.status === 201) {
         localStorage.setItem("token", response.data.token);
         setTimeout(() => {
-          navigate("/home");
+          navigate("/");
           toast.success("Login Successfull");
         }, 2000);
       }
