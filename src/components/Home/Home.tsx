@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import HeroSection from "../HeroSection";
 import Navbar from "../Navbar";
 import Partners from "../Partners";
+import Awards from "../Awards";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -94,7 +95,7 @@ const Home = () => {
 
       <div className="bg-white py-10">
       <Partners />
-
+      <Awards />
       </div>
 
     </div>
