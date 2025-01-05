@@ -47,7 +47,7 @@ const NavList = ({ items }: any) => {
           <div className="h-[42px] w-full absolute  bg-transparent" />
 
           <ul
-            className="bg-white w-[225px] p-4 z-10"
+            className="bg-white w-[225px] p-4 z-10 mt-10"
             style={{ marginLeft: `${menuPosition}px` }}
           >
             {navbarSubMenu[hoveredIndex].titles.map(

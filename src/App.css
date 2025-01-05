@@ -5,9 +5,7 @@
 
 body{
     background-color: black;
-    font-family: "Inter", sans-serif;
-    background-image: url("https://pixor-react.wpolive.com/static/media/bg-shap.de1636bd491312296dd2cd2b7d5d9ead.svg") !important;
-    
+    font-family: "Inter", sans-serif; 
 }
 
 h2{

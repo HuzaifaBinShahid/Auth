@@ -2,7 +2,10 @@ import axios from "axios";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import HeroSection from "../HeroSection";
 import Navbar from "../Navbar";
+import Partners from "../Partners";
+import Awards from "../Awards";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -85,7 +88,16 @@ const Home = () => {
         Logout
       </button> */}
 
-      <Navbar />
+      <div className="bg-bgImage  bg-no-repeat bg-cover w-full mb-8">
+        <Navbar />
+        <HeroSection />
+      </div>
+
+      <div className="bg-white py-10">
+      <Partners />
+      <Awards />
+      </div>
+
     </div>
   );
 };
