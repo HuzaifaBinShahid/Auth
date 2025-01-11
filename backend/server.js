@@ -1,15 +1,12 @@
 import bcrypt from 'bcrypt';
-import bodyParser from 'body-parser';
 import cors from 'cors';
-import express from 'express';
 import session from 'express-session';
+import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
-const secretKey = '@Eps1lon@'
 
-const app = express();
-app.use(bodyParser.json());
-
+const JWT_SECRET = import.meta.env.JWT_SECRET || "@Eps1lon@";
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 app.use(cors({
   origin: 'http://localhost:5173',
@@ -47,7 +44,9 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  email: { type: String, required: true, unique: true }
+  email: { type: String, required: true, unique: true },
+  googleId: { type: String },
+  picture: { type: String }
 });
 
 const User = mongoose.model('User', userSchema);
@@ -102,13 +101,54 @@ app.post('/logout', async (req, res) => {
 //   }
 // });
 
+app.post('/auth/google', async (req, res) => {
+  try {
+    const { email, name, googleId, picture } = req.body;
+
+    // Check if user exists
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create new user if doesn't exist
+      user = new User({
+        email,
+        name,
+        googleId,
+        picture,
+        password: null, // For Google-authenticated users
+      });
+      await user.save();
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.status(201).json({
+      token,
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        picture: user.picture
+      }
+    });
+  } catch (error) {
+    console.error('Google auth error:', error);
+    res.status(500).json({ message: 'Authentication failed' });
+  }
+});
+
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email })
     const comparedPassword = await bcrypt.compare(password, user.password);
     if (user && comparedPassword) {
-      const token = jwt.sign({ userId: user._id, email: user.email }, secretKey, { expiresIn: '1h' })
+      const token = jwt.sign({ userId: user._id, email: user.email }, JWT_SECRET, { expiresIn: '1h' })
       return res.status(201).json({ message: "Login successfull", token })
     }
     res.status(401).json({ message: "Invalid credentials" })
@@ -124,7 +164,7 @@ const authenticateToken = (req, res, next) => {
     return res.status(401).json({ message: 'Unauthorized' })
   }
 
-  jwt.verify(token, secretKey, (err, user) => {
+  jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) {
       return res.sendStatus(403).json({ message: 'Invalid token' });
     }
