@@ -7,6 +7,10 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'jakarta': ['"Plus Jakarta Sans"', 'sans-serif'],
+        'roboto': ['"Roboto"', 'sans-serif']
+      },
       colors: {
         'br-bottom': '#FFFFFF21',
         'orangetext' : "#fd5b38"
@@ -26,4 +30,7 @@ export default {
       });
     }),
   ],
+
+  
 }
+

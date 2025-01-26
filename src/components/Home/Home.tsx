@@ -6,6 +6,7 @@ import HeroSection from "../HeroSection";
 import Navbar from "../Navbar";
 import Partners from "../Partners";
 import Awards from "../Awards";
+import Services from "../Services";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -97,6 +98,9 @@ const Home = () => {
       <Partners />
       <Awards />
       </div>
+
+      <Services />
+
 
     </div>
   );

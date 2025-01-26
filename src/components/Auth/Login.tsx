@@ -1,9 +1,18 @@
 import axios from "axios";
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import logo from "../../assets/logo.png";
-import Spinner from "../common/Spinner";
+import Spinner from "../commonComponents/Spinner";
+
+interface GoogleDecodedCredential {
+  email: string;
+  name: string;
+  sub: string;
+  picture: string;
+}
 
 const Login = () => {
   const [email, setEmail] = useState<string>("");
@@ -38,6 +47,32 @@ const Login = () => {
     }
   };
 
+  const handleGoogleLoginSuccess = async (credentialResponse: any) => {
+    try {
+      const decoded = jwtDecode<GoogleDecodedCredential>(credentialResponse.credential);
+
+      const response = await axios.post("http://localhost:3000/auth/google", {
+        email: decoded.email,
+        name: decoded.name,
+        googleId: decoded.sub,
+        picture: decoded.picture,
+      });
+
+      if (response.status === 201) {
+        localStorage.setItem("token", response?.data?.token);
+        navigate("/");
+        toast.success("Google Login Successful");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Google login failed");
+    }
+  };
+
+  const handleGoogleError = () => {
+    toast.error("Google login failed");
+  };
+
   return (
     <div className="p-4 w-[70%] mx-auto">
       <div className="flex justify-between mb-6">
@@ -68,6 +103,14 @@ const Login = () => {
           {isLoading ? <Spinner /> : "Login"}
         </button>
       </form>
+
+      <div className="flex flex-col items-center mt-4">
+        <GoogleLogin
+          onSuccess={handleGoogleLoginSuccess}
+          onError={handleGoogleError}
+          useOneTap
+        />
+      </div>
 
       <p className="text-center mt-6">
         Don't have an account?

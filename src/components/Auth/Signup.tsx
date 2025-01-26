@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import logo from "../../assets/logo.png";
 import "../../index.css";
-import Spinner from "../common/Spinner";
+import Spinner from "../commonComponents/Spinner";
 
 const Signup = () => {
   const [username, setUsername] = useState("");
