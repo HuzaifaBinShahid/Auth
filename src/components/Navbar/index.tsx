@@ -1,5 +1,5 @@
-import CommonButton from "../common/CommonButton";
-import NavList from "../common/NavList";
+import CommonButton from "../commonComponents/CommonButton";
+import NavList from "../commonComponents/NavList";
 
 const Navbar = () => {
   const navItems = ["Home", "About", "Services", "Portfolio"];
