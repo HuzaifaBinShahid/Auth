@@ -28,12 +28,13 @@ const Login = () => {
         email,
         password,
       });
-
-      if (response.status === 201) {
+  
+      if (response.status === 200) {
         localStorage.setItem("token", response.data.token);
+        toast.success("Login Successful");
+  
         setTimeout(() => {
           navigate("/");
-          toast.success("Login Successfull");
         }, 2000);
       }
     } catch (error) {
@@ -43,9 +44,11 @@ const Login = () => {
       } else {
         toast.error("An unexpected error occurred");
       }
+    } finally {
       setIsLoading(false);
     }
   };
+  
 
   const handleGoogleLoginSuccess = async (credentialResponse: any) => {
     try {
@@ -58,7 +61,7 @@ const Login = () => {
         picture: decoded.picture,
       });
 
-      if (response.status === 201) {
+      if (response.status === 200) {
         localStorage.setItem("token", response?.data?.token);
         navigate("/");
         toast.success("Google Login Successful");
