@@ -1,13 +1,11 @@
 import cors from "cors";
 import session from "express-session";
 import { OAuth2Client } from "google-auth-library";
-import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import express from "express";
 
 import authRoute from "./routes/auth.routes.js";
 
-const JWT_SECRET = "@Eps1lon@";
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const app = express();
@@ -23,7 +21,7 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/auth", authRoute);
+app.use("/", authRoute);
 
 // PreFlight Cors Check
 
@@ -59,15 +57,15 @@ mongoose
 
 //-------------------Login using session id------------------------
 
-app.post("/logout", async (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.error(err);
-      res.status(500).json({ message: "Error logging out" });
-    }
-    res.status(200).json({ message: "Logout successful" });
-  });
-});
+// app.post("/logout", async (req, res) => {
+//   req.session.destroy((err) => {
+//     if (err) {
+//       console.error(err);
+//       res.status(500).json({ message: "Error logging out" });
+//     }
+//     res.status(200).json({ message: "Logout successful" });
+//   });
+// });
 
 // ------------------- Checking session based on session id in cookie -----------------
 // app.get('/check-session', (req, res) => {
@@ -78,61 +76,58 @@ app.post("/logout", async (req, res) => {
 //   }
 // });
 
-app.post("/auth/google", async (req, res) => {
-  try {
-    const { email, name, googleId, picture } = req.body;
+// app.post("/auth/google", async (req, res) => {
+//   try {
+//     const { email, name, googleId, picture } = req.body;
 
-    // Check if user exists
-    let user = await User.findOne({ email });
+//     // Check if user exists
+//     let user = await User.findOne({ email });
 
-    if (!user) {
-      // Create new user if doesn't exist
-      const username = email.split("@")[0] + Math.floor(Math.random() * 1000);
-      user = new User({
-        email,
-        name,
-        googleId,
-        picture,
-        username,
-        password: null, // For Google-authenticated users
-      });
-      await user.save();
-    }
+//     if (!user) {
+//       // Create new user if doesn't exist
+//       const username = email.split("@")[0] + Math.floor(Math.random() * 1000);
+//       user = new User({
+//         email,
+//         name,
+//         googleId,
+//         picture,
+//         username,
+//         password: null, // For Google-authenticated users
+//       });
+//       await user.save();
+//     }
 
-    // Generate JWT token
-    const token = jwt.sign(
-      { userId: user._id, email: user.email },
-      JWT_SECRET,
-      { expiresIn: "24h" }
-    );
+//     // Generate JWT token
+//     const token = jwt.sign(
+//       { userId: user._id, email: user.email },
+//       JWT_SECRET,
+//       { expiresIn: "24h" }
+//     );
 
-    res.status(201).json({
-      token,
-      user: {
-        id: user._id,
-        email: user.email,
-        name: user.name,
-        picture: user.picture,
-      },
-    });
-  } catch (error) {
-    console.error("Google auth error:", error);
-    res.status(500).json({ message: "Authentication failed" });
-  }
-});
-
-// app.get("/check-token", authenticateToken, (req, res) => {
-//   // Since the token is valid and `authenticateToken` attaches `req.user`, return the user info
-//   res.status(200).json({ isLoggedIn: true, userId: req.user.userId });
+//     res.status(201).json({
+//       token,
+//       user: {
+//         id: user._id,
+//         email: user.email,
+//         name: user.name,
+//         picture: user.picture,
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Google auth error:", error);
+//     res.status(500).json({ message: "Authentication failed" });
+//   }
 // });
 
-app.post("/logout", (req, res) => {
-  req.session.destroy((err) => {
-    if (err) return res.status(500).json({ message: "Error logging out" });
-    res.clearCookie("connect.sid");
-    res.status(201).json({ message: "Logout successful" });
-  });
-});
+
+
+// app.post("/logout", (req, res) => {
+//   req.session.destroy((err) => {
+//     if (err) return res.status(500).json({ message: "Error logging out" });
+//     res.clearCookie("connect.sid");
+//     res.status(201).json({ message: "Logout successful" });
+//   });
+// });
 
 app.listen(3000, () => {
   console.log("Server is running on http://localhost:3000");
